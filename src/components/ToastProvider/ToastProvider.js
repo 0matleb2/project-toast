@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import ToastShelf from '../ToastShelf';
+import useKeyDown from '../../hooks/useEscapeKey';
 
 export const ToastContext = React.createContext();
 
@@ -23,23 +24,9 @@ function ToastProvider({ children }) {
     setToasts(nextToasts);
   }
 
-  function removeAllToasts() {
-    setToasts([]);
-  }
+  const removeAllToasts = React.useCallback(() => setToasts([]), []);
 
-  useEffect(() => {
-    function handleEscapePressed(event) {
-      if (event.key === 'Escape') {
-        removeAllToasts();
-      }
-    }
-
-    document.addEventListener('keydown', handleEscapePressed);
-
-    return () => {
-      document.removeEventListener('keydown', handleEscapePressed);
-    };
-  }, []);
+  useKeyDown('Escape', removeAllToasts);
 
   return (
     <ToastContext.Provider value={{ toasts, addToast, removeToast }}>
